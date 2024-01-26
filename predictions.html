@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Stock Market Analysis</h1>
+    <form id="prediction-form">
+        <label for="data">Enter Stock Data (comma-separated):</label>
+        <input type="text" id="data" required>
+        <button type="button" onclick="predict()">Predict</button>
+    </form>
+    <div id="result"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function predict() {
+            var dataValue = document.getElementById('data').value;
+            var dataArray = dataValue.split(',').map(parseFloat);
+            
+            fetch('http://localhost:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ data: dataArray }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('result').innerText = 'Prediction: ' + data.predict[0];
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
+
+<!--10.3,11.7,12.3,14.7,15.8,15.9,16.01,16.2,16.3-->
